@@ -1,0 +1,20 @@
+[module]
+  [module.hugoVersion]
+    extended = true
+    min = "0.80.0"
+
+[params]
+author = "Avi"
+user = "Aviii06"
+hostname = "aviii.me"
+
+[[params.social]]
+key = 0
+name = "github"
+url = "https://github.com/aviii06/"
+
+[menu]
+  [[menu.header]]
+    name = "posts"
+    weight = 0
+    url = "/posts"
