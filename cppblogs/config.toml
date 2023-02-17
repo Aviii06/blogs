@@ -1,0 +1,4 @@
+baseURL = 'http://aviii.me'
+languageCode = 'en-us'
+title = 'blogs'
+theme = 'nightfall'
