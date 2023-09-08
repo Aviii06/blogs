@@ -1,7 +1,7 @@
 baseURL = 'https://blog.aviii.me/'
 languageCode = 'en-us'
 title = 'blogs'
-theme = 'terminal'
+theme = 'terminal2'
 
 [params]
   fullWidthTheme = true
