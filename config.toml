@@ -2,6 +2,7 @@ baseURL = 'https://blog.aviii.me/'
 languageCode = 'en-us'
 title = 'blogs'
 theme = 'terminal'
+canonifyURLs = true 
 
 [params]
   fullWidthTheme = true
