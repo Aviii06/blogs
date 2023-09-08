@@ -22,7 +22,7 @@ Here is an image of what it looks like:
 We have two types of springs here; the red ones are the structural springs, and the blue ones are the shear springs. The structural springs are attached to the adjacent points, and the shear springs are connected to the diagonal points. This is a simple model and should be very easy to implement.
 It was so easy, in fact, that I implemented a 2D version of this in an evening in [processing](https://github.com/Aviii06/clothSim). Here is how it looks:
 
-<p align="center"><iframe src="https://drive.google.com/file/d/1cyVKnSbqoOkfVVRBDJ-xBAMj4Y4Nl7Zk/preview" width="800" height="480" allow="autoplay"></iframe></p>
+<p align="center"><iframe src="https://drive.google.com/file/d/1cyVKnSbqoOkfVVRBDJ-xBAMj4Y4Nl7Zk/preview" style="height: 405px; width: 100%; min-width: 360px; max-width: 590px;"  allow="autoplay" frameborder="0"></iframe></p>
 
 
 That's the extent of my ideas, but, surely people smarter than me would have done something better right? Yes, yes they have. 
@@ -130,7 +130,7 @@ What you can even do is write all these equations in one big matrix and then use
 
 Anyways with this I was able to get some cool results. Here is an example simulation:
 
-<p align="center"><iframe src="https://drive.google.com/file/d/1YEmJMB0iDhn6x5hQ3dh68uXV7I1kYI8K/preview" width=800 height=480 allow="autoplay"></iframe></p>
+<p align="center"><iframe src="https://drive.google.com/file/d/1YEmJMB0iDhn6x5hQ3dh68uXV7I1kYI8K/preview"  style="height: 405px; width: 100%; min-width: 360px; max-width: 590px;"  allow="autoplay" frameborder="0"></iframe></p>
 
 The end of the simulation:
 
@@ -181,7 +181,7 @@ And for \\({\vec u_3}\\) and \\({\vec u_4}\\) we have:
 I can't even understand this, how do you even differentiate that. I am just happy I am not the one who's going to be doing that. Let's just quickly implement this for our explicit euler version with damping(the one without differentiations) and see what happens.
 
 Here is the result:
-<p align=center><iframe src="https://drive.google.com/file/d/1JOpRSZwxw37xJfMdVeVdK6-JVvDbQQ-m/preview" width=800 height=480></iframe></p>
+<p align=center><iframe src="https://drive.google.com/file/d/1JOpRSZwxw37xJfMdVeVdK6-JVvDbQQ-m/preview"  style="height: 405px; width: 100%; min-width: 360px; max-width: 590px;" frameborder="0" ></iframe></p>
 
 
 Okay that looks better and more cloth like. Let's see what happens when we add bending to the implicit euler. Let's quickly look for the jacobians and... wait... 
@@ -190,7 +190,7 @@ Okay that looks better and more cloth like. Let's see what happens when we add b
 
 The following is my stream of consciousness and thoughts while I was trying to figure out how to do this. For more concrete thoughts checkout my short note on jacobian calculation of this problem: 
 
-<p align=center><iframe src="https://drive.google.com/file/d/13meZb2pdfZb13P9KlfVuJ_q4C-3vb9E7/preview" width=800 height=480></iframe></p>
+<p align=center><iframe src="https://drive.google.com/file/d/13meZb2pdfZb13P9KlfVuJ_q4C-3vb9E7/preview"  style="height: 405px; width: 100%; min-width: 360px; max-width: 590px;" frameborder="0" ></iframe></p>
 
 ## Calm before the storm
 So there are no force derivatives for this... Hence we'll have to do this on our own.
@@ -340,7 +340,7 @@ And:
 All this so elegant and compact. And the jacobian is simple enough that having floating point errors is easily fixable.
 
 After all this... finally my implicit euler simulation works!
-<p align=center><iframe src="https://drive.google.com/file/d/1NdSzoRN6RY_hTOcc1Y-GY_EspdkizbuH/preview" width="800" height="480" allow="autoplay"></iframe></p>
+<p align=center><iframe src="https://drive.google.com/file/d/1NdSzoRN6RY_hTOcc1Y-GY_EspdkizbuH/preview"  style="height: 405px; width: 100%; min-width: 360px; max-width: 590px;" frameborder="0" ></iframe></p>
 
 
 It works and it's glorious.
