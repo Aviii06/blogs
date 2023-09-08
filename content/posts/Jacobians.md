@@ -46,7 +46,8 @@ This is how a mesh like this would look like:
 Above, you can see a simple cloth model with 25-point masses. Adjacent point masses have springs attached to them, these are the structural springs. The springs attached to the second closest neighbours are the bending springs. 
 
 To calculate the force on a point mass you just need to use hooke's law.
-\\[ \vec{F_P} = - C * \vec{v_P} - \sum_{Q \in R}{K_{PQ} * (\vec{PQ} - PQ_0 * \hat{PQ})} \\]
+
+\\( \vec{F_P} = - C * \vec{v_P} - \sum_{Q \in R}{K_{PQ} * (|\vec{PQ}| - PQ_0) * \hat{PQ}} \\)
 
 \\(\vec{F_P} := \\) Internal Force at point \\(P\\). 
 
@@ -80,7 +81,8 @@ Simply put, we are going to use the current velocity and position of the point t
 \\[ \vec{r_{P, t+1}} = \vec{r_{P,t}} + \vec{v_{P, t}}\\]
 
 and obviously:
-\\[ \vec{F_{P, t}} = - C * \vec{v_{P,t}} - \sum_{Q \in R}{K_{PQ} * (\vec{PQ_{t}} - PQ_0 * \hat{PQ_{t}})} \\]
+
+\\( \vec{F_{P, t}} = - C * \vec{v_{P,t}} - \sum_{Q \in R}{K_{PQ} * (|\vec{PQ_{t}}| - PQ_0) * \hat{PQ_{t}}} \\)
 
 This is really cool and elegant the only problem is that it doesn't work. It doesn't work because it is not stable. This means that the system will just explode(if given no damping). This is because the system is doesn't conserve energy. 
 
@@ -172,8 +174,9 @@ Ofcourse, here they are:
 
 And for \\({\vec u_3}\\) and \\({\vec u_4}\\) we have:
 
-\\[{\vec u_3 } = \frac{({\vec x_1 - x_4}) \cdot {\vec E}}{|{\vec E}|}  \frac{\vec N_1}{|{\vec N_1}^2|} + \frac{({\vec x_2 - x_4}) \cdot {\vec E}}{|{\vec E}|}  \frac{\vec N_2}{|{\vec N_2}|^2}\\]
-\\[{\vec u_4 } = -\frac{({\vec x_1 - x_3}) \cdot {\vec E}}{|{\vec E}|}  \frac{\vec N_1}{|{\vec N_1}^2|} - \frac{({\vec x_2 - x_3}) \cdot {\vec E}}{|{\vec E}|}  \frac{\vec N_2}{|{\vec N_2}|^2}\\]
+\\({\vec u_3 } = \frac{({\vec x_1 - x_4}) \cdot {\vec E}}{|{\vec E}|}  \frac{\vec N_1}{|{\vec N_1}^2|} + \frac{({\vec x_2 - x_4}) \cdot {\vec E}}{|{\vec E}|}  \frac{\vec N_2}{|{\vec N_2}|^2}\\)
+
+\\({\vec u_4 } = -\frac{({\vec x_1 - x_3}) \cdot {\vec E}}{|{\vec E}|}  \frac{\vec N_1}{|{\vec N_1}^2|} - \frac{({\vec x_2 - x_3}) \cdot {\vec E}}{|{\vec E}|}  \frac{\vec N_2}{|{\vec N_2}|^2}\\)
 
 
 ....
@@ -254,7 +257,8 @@ Well we can use this clever log trick:
 
 \\[ log(A_1) = 2log(|{\vec E}|) - log(|{\vec N_1}| + |{\vec N_2}|) \\]
 
-\\[\implies \frac{1}{A_1}\frac{\partial A_1}{\partial {\vec x_i}} = \frac{2}{|{\vec E}|} \frac{\partial |{\vec E}|}{\partial {\vec x_i}} -  \frac{1}{|{\vec N_1}| + |{\vec N_2}| }\frac{\partial (|{\vec N_1}| + |{\vec N_2}| )}{\partial {\vec x_i}} \\]
+\\[\implies \frac{1}{A_1}\frac{\partial A_1}{\partial {\vec x_i}} = \\]
+\\[\frac{2}{|{\vec E}|} \frac{\partial |{\vec E}|}{\partial {\vec x_i}} -  \frac{1}{|{\vec N_1}| + |{\vec N_2}| }\frac{\partial (|{\vec N_1}| + |{\vec N_2}| )}{\partial {\vec x_i}} \\]
 
 This makes it so much more easier to deal with.
 
