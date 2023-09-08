@@ -1,4 +1,16 @@
 baseURL = 'https://blog.aviii.me/'
 languageCode = 'en-us'
 title = 'blogs'
-theme = 'nightfall'
+theme = 'terminal'
+
+[params]
+  fullWidthTheme = true
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true 
+    [markup.goldmark.parser]
+      wrapStandAloneImageWithinParagraph = false
+      [markup.goldmark.parser.attribute]
+        block = true

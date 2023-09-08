@@ -5,40 +5,47 @@ date: 2023-02-17
 
 Move semantics are an essential cpp concept. But to understand and appreciate them, we need to understand certain basics first.
 
-
 # lvalue and rvalue
+
 ```cpp
 int i = 0;
 ```
+
 Here:
-* `i` is an lvalue whereas `0` is an rvalue.
-* lvalue is an object that occupies some identifiable location in memory.
-* rvalue is an object that does not occupy some identifiable location in memory.
+
+- `i` is an lvalue whereas `0` is an rvalue.
+- lvalue is an object that occupies some identifiable location in memory.
+- rvalue is an object that does not occupy some identifiable location in memory.
 
 # Basics of lvalue and rvalue
-### 1) We can assign an lvalue to an rvalue. But not vice-versa
+
+1. We can assign an lvalue to an rvalue. But not vice-versa
 
 For example:
+
 ```c++
 int i = 10;
 10 = i; // non-sense
 ```
 
-### 2) We can't have an lvalue reference of an rvalue, But having an const lvalue reference of an rvalue is fine
+2. We can't have an lvalue reference of an rvalue, But having an const lvalue reference of an rvalue is fine
+
 ```c++
 int& i = 10; // Error
 const int& i = 10; // OK
 ```
 
-### 3) We can't have an rvalue reference of an lvalue
+3. We can't have an rvalue reference of an lvalue
+
 ```c++
 int i = 10;
 int&& j = i; // Error
 ```
 
-
 # Functions and lvalue, rvalue
+
 The return value of a function is an l-value if and only if it is a reference
+
 ```c++
 int Get()
 {
@@ -52,6 +59,7 @@ Get() = i; // Error
 ```
 
 just to make it extra clear, it doesn't really matter if you change to:
+
 ```c++
 int Get()
 {
@@ -59,7 +67,9 @@ int Get()
     return i;
 }
 ```
+
 Again, only way to return an lvalue is by returning an lvalue reference.
+
 ```c++
 int& Get()
 {
@@ -69,12 +79,14 @@ int& Get()
 ```
 
 Now you can do this:
+
 ```c++
 i = Get();
 Get() = i;
 ```
 
 Bonus:
+
 ```c++
 int& Get()
 {
@@ -84,6 +96,7 @@ int& Get()
 ```
 
 Can only have an lvalue refrence of an lvalue
+
 ```c++
 void Set(int& i)
 {
@@ -101,32 +114,40 @@ Set(i+ 10); // Error
 No location to store this value, so we can't have an lvalue reference of an rvalue
 
 const lvalue reference are fine however, because they can bind to rvalues
+
 ```c++
 void Set(const int& i)
 {
     printf("const lvalue reference\n");
 }
 ```
+
 # Move Semantics
-## What is *MOVING*?
-Moving in cpp means to transfer the ownership of an object from one variable to another. 
+
+## What is _MOVING_?
+
+Moving in cpp means to transfer the ownership of an object from one variable to another.
 It is a very fast operation, because it doesn't involve any copying of data. It is just a pointer copy. Moving isn't cpoying and deleting the old object.
 It is just transferring the ownership of the object from one variable to another.
 
 Copying
+
 ```
 X -->  0x16af33548
 X -->  0x16af33548  0x16d473548 <--Y
 ```
 
 Moving
+
 ```
 X -->  0x16af33548
 X --> NULL 0x16af33548 <--Y
 ```
+
 No malloc, no construction
 
 ## Move Constructor
+
 ```c++
 class vector
 {
@@ -180,7 +201,7 @@ int main()
 }
 ```
 
-**Important Note**: now `v1` points to `nullptr` and `v3` points to `v1`'s data. So if we try to access `v1`'s data, we will get a segmentation fault. 
+**Important Note**: now `v1` points to `nullptr` and `v3` points to `v1`'s data. So if we try to access `v1`'s data, we will get a segmentation fault.
 
 Performance: Ofcoure it would be fast, memory alloc is often the bottleneck.
 
@@ -219,12 +240,14 @@ int main()
 ```
 
 Output:
+
 ```
 No move, no inline construction: 10116165
 Move, no inline construction   : 83041
 ```
 
 # Perfect Forwarding
+
 Goal: To make a function take values and forward them to another with retaining them as lvalues or rvalues
 
 ```c++
@@ -243,6 +266,7 @@ int temp3 = Create(i+ 10); // Error
 ```
 
 Maybe, overlord it with `const Args&`?
+
 ```c++
 template<typename T, typename Args>
 T Create(const Args& a)
@@ -252,6 +276,7 @@ T Create(const Args& a)
 ```
 
 Now this works
+
 ```c++
 int i = 10;
 int temp1 = Create(i); // OK
@@ -267,7 +292,7 @@ class foo
 public:
     int m_i;
 public:
-    foo(int i) : m_i(i) 
+    foo(int i) : m_i(i)
     {
         printf("foo(int i)\n");
     }
@@ -283,21 +308,24 @@ int main()
 ```
 
 For example if we have a constructor that takes an rvalue reference
+
 ```c++
 class foo
 {
 public:
     int m_i;
 public:
-    foo(int&& i) : m_i(i) 
+    foo(int&& i) : m_i(i)
     {
         printf("foo(int&& i)\n");
     }
 };
 ```
+
 Now we get a compiler error. Because we are passing an lvalue to a function that takes an rvalue reference
 
 Solution: Forwarding
+
 ```c++
 template<typename T, typename ... Args>
 T Create(Args&& ... a)
@@ -312,7 +340,7 @@ int main()
     int i = 10;
     std::cout << "i = " << &i << std::endl;
     foo temp1 = Create<foo>(i); // OK
-    foo temp2 = Create<foo>(10); // OK and now no construction!!! 
+    foo temp2 = Create<foo>(10); // OK and now no construction!!!
     return 0;
 }
 ```
