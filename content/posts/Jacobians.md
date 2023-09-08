@@ -7,31 +7,31 @@ markup: 'mmark'
 
 # Context
 
-Picture this: you are a 3rd year undergraduate student trying to simulate a cloth. You have an elementary understanding of physics, differential equations, linear algebra, vector calculus and programming. You have a very crude experience of all this. You are a basic person. But this basic person wants to simulate clothes. That’s me. I am that basic person.
+Picture this: there is a 3rd year undergraduate student trying to simulate a cloth. He have an elementary understanding of physics, differential equations, linear algebra, vector calculus and programming. He have a very crude experience of all this. He is a basic person. But this basic person wants to simulate clothes. What does he need to do. Well don't wory because that basic person is me. And following is my struggle to simulate a cloth.
 
 
 # How do you simulate a cloth?
 
-I thought of a straightforward way to do this. We’ll have many point masses and springs attached to them.
+How would you even start this? I thought of a straightforward way to do this. We’ll have many point masses and springs attached to them.
 
-Here is an image of what I am talking about.
+Here is an image of what it looks like:
 
 ![Mass Spring without bending](/MassSpring.png)
 {width="500" alt="MassSpring Without Bending" class="center"}
 
 We have two types of springs here; the red ones are the structural springs, and the blue ones are the shear springs. The structural springs are attached to the adjacent points, and the shear springs are connected to the diagonal points. This is a simple model and should be very easy to implement.
-Well, yes, it is straightforward to implement. It was so easy, in fact, that I implemented a 2D version of this in a day in [processing](https://github.com/Aviii06/clothSim). Here is how it looks:
+It was so easy, in fact, that I implemented a 2D version of this in an evening in [processing](https://github.com/Aviii06/clothSim). Here is how it looks:
 
 <p align="center"><iframe src="https://drive.google.com/file/d/1cyVKnSbqoOkfVVRBDJ-xBAMj4Y4Nl7Zk/preview" width="800" height="480" allow="autoplay"></iframe></p>
 
 
-That's the extent of my ideas, surely people smarter than me would have done something better. And they have. 
+That's the extent of my ideas, but, surely people smarter than me would have done something better right? Yes, yes they have. 
 
 Let's start with the basic stuff. This mass-spring system is actually a very good approximation of a cloth. People add a few more things to give it a bit more realism, and it being so computationally efficient is a huge plus.
 
-One common trick is just to add a few more springs. These springs are called Bending Springs. These springs are attached to the second closest neighbours of a point. 
+One common trick is just to add a few more springs. These springs are called Bending Springs. These springs are attached to the second closest neighbours of a point. The real reason for doing this is actually because cloth does actually have bending stiffness, but who cares about that. I just follow the rule "The more the springs the better".
 
-It's also common to use triangular meshes. This is likely due to the fact triangles are better than squares. Rendering wise and approximation-wise. Also, triangles are just cooler!
+It's also common to use triangular meshes. This is likely due to the fact triangles are better (and cooler!) than squares. 
 
 Now, because we have triangles, we don't need shear springs. We can use the structural springs.
 
@@ -66,8 +66,13 @@ To calculate the force on a point mass you just need to use hooke's law.
 
 \\(C := \\) Damping Constant.
 
+Simple stuff really. This is all just highschool maths. 
 
-So how do you solve this? Analytically, this would be a nightmare. It is a set of 2nd-order differential equations. Hence, we try to solve this numerically. We use Explicit Euler method, which is a fancy way of saying we will use a first-order approximation of the differential equation.
+So how do you solve this? Analytically, this would be a nightmare. It is a set of 2nd-order differential equations, I can't even solve one such second order let alone a set of these. And apparently it actually is a really hard problem to solve analytically. Hence, we try to solve this numerically.
+
+Numerically solving you need different time integration techniques, basically you throw away maths and become an engineer. It all starts with approximating derivatives \\(\frac{dy}{dx} = \frac{\Delta y}{\Delta x}\\). If you are a mathematician and are buthurt well I guess you can satisfy yourself with thinking this is just a first-order Taylor series approximation... but I am not a mathematician so I don't care.
+
+One such scheme is called Explicit Euler.
 
 ## Explict Euler
 Simply put, we are going to use the current velocity and position of the point to calculate the next position and velocity of the point. This is done by using the following equations:
@@ -77,28 +82,30 @@ Simply put, we are going to use the current velocity and position of the point t
 and obviously:
 \\[ \vec{F_{P, t}} = - C * \vec{v_{P,t}} - \sum_{Q \in R}{K_{PQ} * (\vec{PQ_{t}} - PQ_0 * \hat{PQ_{t}})} \\]
 
-This is a very simple method and is very easy to implement. But it has a few problems. The biggest problem is that it is not stable. This means that the system will just explode. This is because the system is not energy conserving. So we need to use a better method.
+This is really cool and elegant the only problem is that it doesn't work. It doesn't work because it is not stable. This means that the system will just explode(if given no damping). This is because the system is doesn't conserve energy. 
+
+You need to keep the time step really small for it to work. So we need to use a better method.
+
 
 ## Implicit Euler
-Implicit Euler is a better method. It is stable and energy conserving. But it is a bit more complicated. The only equation which changes is the velocity equation. The position equation remains the same.
+Implicit Euler is a better method. It is stable as in it decreases energy over time, hence it is impossible to explode. But it is a bit more complicated. The only equation which changes is the velocity equation. 
 \\[ \vec{v_{P, t+1}} = \vec{v_{P, t}} + \frac{\vec{F_{P, t+1}}}{m} * \Delta t \\]
 
 This uses the next positions to calculate the next velocities. This is a bit more complicated to solve. Since we are using the next positions to calculate the next velocities we need to solve a system of equations. So how do you even calculate the next positions? This is like the chicken and egg problem but with differential equations. How do you get the next positions if you don't have the next velocities? How do you get the next velocities if you don't have the next positions?
 
-The trick is to use first-order Taylor series approximation.
-
+Well the answer is obvious really:
 \\[ \vec{F_{P,t+1}} = \vec{F_{P, t}} + \frac{\partial{\vec{F_P}}}{\partial{\vec{r_P}}} * \Delta \vec{r} + \frac{\partial{\vec{F_P}}}{\partial{\vec{v_Q}}} * \Delta \vec{v}\\]
 
-So I guess I need to do this \\(\forall P\\) and we're done? Well that's easier than expected isn't it. 
+You just use the first-order Taylor series expansion of a multivariable vector function... duh.
 
-**It's not**.
+So I guess I need to do this \\(\forall P\\) and we're done? Well that's a bit anti-climatic. I mean I was expecting something more complicated. But I guess this is it.
 
-The thing that I had ignored till now was that these are not real numbers... these are vectors. What does it eeven mean to differentiate a vector wrt to a vector? I guess in a way it could be component wise but what does it mean to have it multiply by a vector?
 
-## A Nightmare at the horizon
-So well turns out this is slightly involved. After watching tons of lectures on vector calculus and understanding what it even means to differentiate a vector with another vector I was able to start to understand what was going on.
+## A Nightmare peaking from the horizon
 
-Basically when you differentiate a vector with another vector you get a matrix. This matrix is usually supposed to be material property(in this case).
+So well turns out this is slightly more involved. After watching tons of lectures on vector calculus and understanding what it even means to differentiate a vector with another vector I was able to start to understand what was going on.
+
+Basically when you differentiate a vector with another vector you get a matrix, this is also called jacobian and I will be using these two interchangeably from now on. This matrix, when you differentiate force with direction, is usually supposed to be material property.
 
 In highschool you must have read about hooke's law:
 
@@ -117,19 +124,24 @@ one more time and you get:
 
 As you can see this is a material property. Similary in this case we have a material property. This matrix is of 3x3 for each point. 
 
-So all you have to do is get this matrix, thankfully people much more intelligent then me have calculated this. Infact it is assumed that you'll provide this matrix whenever you publish a new material model. Yes there are many more material models and they have different approaches. But all just essentially either change the forces on the points, or use FEM.
+So all you have to do is get this matrix. Thankfully people much more intelligent then me have calculated this. Infact it is assumed that you'll provide this matrix whenever you publish a new material model. Yes there are many more material models and they have different approaches. But all just essentially either change the forces on the points, or use FEM.
 
-Anyways with this I was able to get some cool results. Here is an [example simulation](https://drive.google.com/file/d/1YEmJMB0iDhn6x5hQ3dh68uXV7I1kYI8K/view?usp=sharing) also a:
+What you can even do is write all these equations in one big matrix and then use sparse matrix solving techniques like conjugate gradient and just like that you have a cloth simulator. Easy right?
+
+Anyways with this I was able to get some cool results. Here is an example simulation:
 
 <p align="center"><iframe src="https://drive.google.com/file/d/1YEmJMB0iDhn6x5hQ3dh68uXV7I1kYI8K/preview" width=800 height=480 allow="autoplay"></iframe></p>
+
+The end of the simulation:
 
 ![Mass Spring without bending](/WithBending2.png)
 {width="500" alt="MassSpring Without Bending" class="center"}
 
+But this doesn't feel enough I want more realism. So I looked across various ways to make more realistic cloth and find one interesting model. 
 
-There are many other types of material models, one is the Bridson Bending Model. Which was published in this [paper](https://dl.acm.org/doi/10.5555/846276.846281). So at it let's see this.
+This is the Bridson Bending Model. Which was published in this [paper](https://dl.acm.org/doi/10.5555/846276.846281). 
 
-Okay so it starts with focusing on only 2 triangles and is somehow strying to implement repulsions based on the angle these "triangular flaps" make.
+Okay so it starts with focusing on only 2 triangles and is somehow trying to implement repulsions based on the angle between these "triangular flaps".
 This is a pictorial representation of what I am talking about:
 
 ![Bridson Bending Example](/BridsonBending.png)
@@ -166,19 +178,21 @@ And for \\({\vec u_3}\\) and \\({\vec u_4}\\) we have:
 
 ....
 
-How do you even differentiate that. I am just happy I am not the one who's going to be doing that. Let's just quickly implement this for our explicit euler(the one without differentiations) and see what happens.
+I can't even understand this, how do you even differentiate that. I am just happy I am not the one who's going to be doing that. Let's just quickly implement this for our explicit euler version with damping(the one without differentiations) and see what happens.
 
-Here are the results:
-
+Here is the result:
+<p align=center><iframe src="https://drive.google.com/file/d/1JOpRSZwxw37xJfMdVeVdK6-JVvDbQQ-m/preview" width=800 height=480></iframe></p>
 
 
 Okay that looks better and more cloth like. Let's see what happens when we add bending to the implicit euler. Let's quickly look for the jacobians and... wait... 
 
-The below is my stream of consciousness while I was trying to figure out how to do this. For more concrete calculation checkout my short note on jacobian calculation of this problem: 
+**THERE ARE NO JACOBIANS**
+
+The following is my stream of consciousness and thoughts while I was trying to figure out how to do this. For more concrete thoughts checkout my short note on jacobian calculation of this problem: 
 
 <p align=center><iframe src="https://drive.google.com/file/d/13meZb2pdfZb13P9KlfVuJ_q4C-3vb9E7/preview" width=800 height=480></iframe></p>
 
-## The Beginning of the Nightmare
+## Calm before the storm
 So there are no force derivatives for this... Hence we'll have to do this on our own.
 This task is very daunting, and I don't even know where to start.
 
@@ -271,8 +285,8 @@ Velocity would be similar but that's future me's problem. For now let's ignore d
 
 It explodes
 
-
 ## The Nightmare
+
 Working in tech things are bound to go wrong. Everything that can go wrong does eventually find a way to come back and haunt you when you expect it the least. 
 
 First question: Why did it explode?
@@ -306,15 +320,12 @@ The list goes on but I was finally able to fix it. So finally, finally my cloth 
 
 And it explodes again... This time it goes NAN. Hmm... this is weird...
 
-And that's when it clicked. Why that \\(sin(\theta / 2)\\) looked so weird, we had a square root in it. It can possibly go negative. And it did. And that's why it exploded.
 
-So I need to check if it's really close to zero. I did it and it doesn't explode so that's cool but the jacobians do not approximate forces.
+## All's well that ends well
 
-Hmm... looking deeply into it I found out that the jacobians are still going NAN and the culprit... the same square root.
+That's when it clicked. The reason why this \\(sin(\theta / 2)\\) looks so weird, we had a square root in it. It can possibly go negative. And it does, because of floating point errors. So I need to check if it's really close to zero. I did it and it doesn't explode so that's cool. But the jacobians still do not approximate forces. Hmm... looking deeply into it I found out that the jacobians are still going NAN and the culprit... the same square root.
 
-SO this form is very poor so poor infact that we need to do something about it...
-
-That's when I gave up and started implementing Damping... afterall it's not exploding right? 
+The only solution is hence that this form is very poor. That's when I gave up and started implementing Damping... afterall it's not exploding at small timestep right? 
 
 Implementing damping I notice a formula:
 \\[\frac{d\theta}{dt} = {\vec u_1} \cdot {\vec v_1} + {\vec u_2} \cdot {\vec v_2} + {\vec u_3} \cdot {\vec v_3} + {\vec u_4} \cdot {\vec v_4}\\]
@@ -326,15 +337,10 @@ And this means that the answer was here right along:
 And:
 \\[cos(\theta / 2) = + \sqrt{\frac{1 + \hat{n_1} \cdot \hat{n_2}}{2}}\\]
 
-All this so elegant and compact.
-
-## All's well that ends well
+All this so elegant and compact. And the jacobian is simple enough that having floating point errors is easily fixable.
 
 After all this... finally my implicit euler simulation works!
 <p align=center><iframe src="https://drive.google.com/file/d/1NdSzoRN6RY_hTOcc1Y-GY_EspdkizbuH/preview" width="800" height="480" allow="autoplay"></iframe></p>
 
 
 It works and it's glorious.
-
-
-
