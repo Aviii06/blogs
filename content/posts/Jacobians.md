@@ -7,35 +7,33 @@ markup: 'mmark'
 
 # Context
 
-Picture this, you are a 3rd year undergraduate student and you are trying to simulate a cloth. You have a very elementary understanding of physics, differential equations, linear algebra, vector calculus and programming. You have a very elementary understanding of all this. You are a very basic person. But this basic person wants to simulate a clothes.
-That's me. I am that basic person.
+Picture this: you are a 3rd year undergraduate student trying to simulate a cloth. You have an elementary understanding of physics, differential equations, linear algebra, vector calculus and programming. You have a very crude experience of all this. You are a basic person. But this basic person wants to simulate clothes. That’s me. I am that basic person.
 
 
 # How do you simulate a cloth?
 
-Learning this I though of a very easy way to do this. Basically we'll just have a lot of point masses and have springs attached to them.
+I thought of a straightforward way to do this. We’ll have many point masses and springs attached to them.
 
 Here is an image of what I am talking about.
 
 ![Mass Spring without bending](/MassSpring.png)
 {width="500" alt="MassSpring Without Bending" class="center"}
 
-We have two types of springs here, the red ones are the structural springs and the blue ones are the shear springs. The structural springs are attached to the adjacent points and the shear springs are attached to the diagonal points. This is a very simple model and should be very easy to implement... right? 
-
-Well yes, it is actually very easy to implement. So easy infact I was able to do this in a day in [processing](https://github.com/Aviii06/clothSim). Here is how it looks:
+We have two types of springs here; the red ones are the structural springs, and the blue ones are the shear springs. The structural springs are attached to the adjacent points, and the shear springs are connected to the diagonal points. This is a simple model and should be very easy to implement.
+Well, yes, it is straightforward to implement. It was so easy, in fact, that I implemented a 2D version of this in a day in [processing](https://github.com/Aviii06/clothSim). Here is how it looks:
 
 <p align="center"><iframe src="https://drive.google.com/file/d/1cyVKnSbqoOkfVVRBDJ-xBAMj4Y4Nl7Zk/preview" width="800" height="480" allow="autoplay"></iframe></p>
 
 
-Not very.... cloth like unfortunately.
+That's the extent of my ideas, surely people smarter than me would have done something better. And they have. 
 
-That's the extent of my ideas, surely people smarter than me would have done something better. And they have. Well let's start with the basic stuff. This mass-spring system is actually a very good approximation of a cloth. People just add a few more things to give it a bit more realism and it being so computationally efficient is a huge plus.
+Let's start with the basic stuff. This mass-spring system is actually a very good approximation of a cloth. People add a few more things to give it a bit more realism, and it being so computationally efficient is a huge plus.
 
-Well they just add a few more springs. These springs are called Bending Springs. These springs are attached to the second closest neighbours of a point. 
+One common trick is just to add a few more springs. These springs are called Bending Springs. These springs are attached to the second closest neighbours of a point. 
 
-Also it's common to use traingular meshes. This is probably due to the fact traingles are just better than squares. Rendering wise and approximation wise. Also traingles are just cooler.
+It's also common to use triangular meshes. This is likely due to the fact triangles are better than squares. Rendering wise and approximation-wise. Also, triangles are just cooler!
 
-Also also, now becuase we have triangles we don;t need shear springs. We can just use the structural springs.
+Now, because we have triangles, we don't need shear springs. We can use the structural springs.
 
 ![Mass Spring with bending](/MassSpringBending.png)
 {width="500" alt="MassSpring With Bending" class="center"}
@@ -45,7 +43,7 @@ This is how a mesh like this would look like:
 ![Mesh](/Mesh.png)
 {width="500" alt="Triangular Mesh" class="center"}
 
-Above you can see is a simple cloth model with 25 point masses. Adjacent point masses have springs attached to them, these are the structural springs. The springs attached to the second closest neighbours are the bending springs. 
+Above, you can see a simple cloth model with 25-point masses. Adjacent point masses have springs attached to them, these are the structural springs. The springs attached to the second closest neighbours are the bending springs. 
 
 To calculate the force on a point mass you just need to use hooke's law.
 \\[ \vec{F_P} = - C * \vec{v_P} - \sum_{Q \in R}{K_{PQ} * (\vec{PQ} - PQ_0 * \hat{PQ})} \\]
@@ -69,7 +67,7 @@ To calculate the force on a point mass you just need to use hooke's law.
 \\(C := \\) Damping Constant.
 
 
-So how do you solve this? Analytically this would be a nightmare. It is a set of 2nd order differential equations. Hence we try to solve this numerically. We use a method called Explicit Euler which is just a fancy way of saying we are going to use a first order approximation of the differential equation.
+So how do you solve this? Analytically, this would be a nightmare. It is a set of 2nd-order differential equations. Hence, we try to solve this numerically. We use Explicit Euler method, which is a fancy way of saying we will use a first-order approximation of the differential equation.
 
 ## Explict Euler
 Simply put, we are going to use the current velocity and position of the point to calculate the next position and velocity of the point. This is done by using the following equations:
@@ -87,7 +85,7 @@ Implicit Euler is a better method. It is stable and energy conserving. But it is
 
 This uses the next positions to calculate the next velocities. This is a bit more complicated to solve. Since we are using the next positions to calculate the next velocities we need to solve a system of equations. So how do you even calculate the next positions? This is like the chicken and egg problem but with differential equations. How do you get the next positions if you don't have the next velocities? How do you get the next velocities if you don't have the next positions?
 
-The trick is to use first order taylor series approximation.
+The trick is to use first-order Taylor series approximation.
 
 \\[ \vec{F_{P,t+1}} = \vec{F_{P, t}} + \frac{\partial{\vec{F_P}}}{\partial{\vec{r_P}}} * \Delta \vec{r} + \frac{\partial{\vec{F_P}}}{\partial{\vec{v_Q}}} * \Delta \vec{v}\\]
 
@@ -95,12 +93,12 @@ So I guess I need to do this \\(\forall P\\) and we're done? Well that's easier 
 
 **It's not**.
 
-The thing that I had ignore till now was that these are not real numbers... these are vectors. What does it eeven mean to differentiate a vector wrt to a vector? I guess in a way it could be component wise but what does it mean to have it multiply by a vector?
+The thing that I had ignored till now was that these are not real numbers... these are vectors. What does it eeven mean to differentiate a vector wrt to a vector? I guess in a way it could be component wise but what does it mean to have it multiply by a vector?
 
 ## A Nightmare at the horizon
-So well turns out this is slightly involved. After watching tons of lectures on tensor calculus and understanding what it even means to differentiate a vector with another vector I was able to start to understand what was going on.
+So well turns out this is slightly involved. After watching tons of lectures on vector calculus and understanding what it even means to differentiate a vector with another vector I was able to start to understand what was going on.
 
-Basically when you differentiate a vector with another vector you get a matrix. This matrix is usually supposed to be material property.
+Basically when you differentiate a vector with another vector you get a matrix. This matrix is usually supposed to be material property(in this case).
 
 In highschool you must have read about hooke's law:
 
@@ -176,15 +174,17 @@ Here are the results:
 
 Okay that looks better and more cloth like. Let's see what happens when we add bending to the implicit euler. Let's quickly look for the jacobians and... wait... 
 
-The below is my stream of consciousness while I was trying to figure out how to do this. For more concrete calculation checkout my [short note on jacobian calculation of this problem](https://drive.google.com/file/d/13meZb2pdfZb13P9KlfVuJ_q4C-3vb9E7/view?usp=sharing).
+The below is my stream of consciousness while I was trying to figure out how to do this. For more concrete calculation checkout my short note on jacobian calculation of this problem: 
+
+<p align=center><iframe src="https://drive.google.com/file/d/13meZb2pdfZb13P9KlfVuJ_q4C-3vb9E7/preview" width=800 height=480></iframe></p>
 
 ## The Beginning of the Nightmare
 So there are no force derivatives for this... Hence we'll have to do this on our own.
-This is a very daunting task and I don't even know where to start. I don't even ideas about this vector calculus.
+This task is very daunting, and I don't even know where to start.
 
-Well let's just try at it... How hard can it be?
+Well let's just have a go at it. How hard can it be?
 
-First let's divide and conquer, I guess it works pretty well the british did it and they conquered half the world. I can atleast find these derivatives...
+First let's divide and conquer. I guess it works pretty well, the british did it and they conquered half the world. I can atleast find these derivatives...
 
 Here is my strategy, I'll find Derivative of this equation:
 \\[{\vec F_i} = K A_0 {\vec u_i}\\]
@@ -199,7 +199,7 @@ Even this seems daunting so let's define \\(A_1\\).
 
 Finally something which seems easy enough to differentiate.
 
-To do this we'll require the derivatives of \\(|{\vec E}|\\), \\|({\vec N_1}|\\) and \\|({\vec N_2}|\\) wrt to the position of the point masses.
+To do this we'll require the derivatives of \\(|{\vec E}|\\), \\(|{\vec N_1}|\\) and \\(|{\vec N_2}|\\) wrt to the position of the point masses.
 
 Let's start with \\({\vec E}\\).
 
@@ -209,12 +209,6 @@ okay... wait how would you do this?
 so let's see if highschool's vector addition taught me anything it was \\( |{\vec E}| = \sqrt{|{\vec x_4}|^2 + |{\vec x_3}|^2 - 2 {\vec x_4} \cdot {\vec x_3}} \\).
 
 Clearly \\(\frac{\partial |{\vec E}|}{\partial {\vec x_1}} = \frac{\partial |{\vec E}|}{\partial {\vec x_2}} = 0\\)
-
-That's a good start. Now let's see what happens when we differentiate wrt to \\({\vec x_3}\\).
-
-Well it becomes a mess... I need a better way, at this rate if I just keep doing this by the time I get to the product rule it would be a nightmare.
-
-That's when I remembered the "tricks" I was taught back in my pre-calc course.
 
 Instead of finding the derivative of \\(|{\vec E}|\\) let's find the derivative of \\(|{\vec E}|^2\\).
 
@@ -237,7 +231,7 @@ So this is how this magic works:
 \end{pmatrix}\\]
 
 With this we can finally get the derivatives of \\(|{\vec N_1}|\\) and \\(|{\vec N_2}|\\), by using the fact:
-\\[\frac{\partial |{\vec N_i}|}{\partial {\vec x_j}} = \frac{\partial |{\vec N_i}|}{\partial {\vec N_i}} \frac{\partial {\vec N_i}}{\partial {\vec x_j}} = {\vec \hat{n_i}^T} \frac{\partial {\vec N_i}}{\partial {\vec x_j}} \\]
+\\[\frac{\partial |{\vec N_i}|}{\partial {\vec x_j}} = \frac{\partial |{\vec N_i}|}{\partial {\vec N_i}} \frac{\partial {\vec N_i}}{\partial {\vec x_j}} = {\hat{n_i}^T} \frac{\partial {\vec N_i}}{\partial {\vec x_j}} \\]
 
 and sparing the maths, now you can get all the \\(\frac{\partial {\vec N_i}}{\partial {\vec x_j}}\\).
 
@@ -334,6 +328,7 @@ And:
 
 All this so elegant and compact.
 
+## All's well that ends well
 
 After all this... finally my implicit euler simulation works!
 <p align=center><iframe src="https://drive.google.com/file/d/1NdSzoRN6RY_hTOcc1Y-GY_EspdkizbuH/preview" width="800" height="480" allow="autoplay"></iframe></p>
